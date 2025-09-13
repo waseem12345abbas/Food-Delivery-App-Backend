@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173", // client URL
+    origin: process.env.CLIENT_URL || "http://localhost:5173", // client URL
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-type", "Authorization"],
     credentials: true,
@@ -38,7 +38,7 @@ const server = http.createServer(app);
 // create socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // same frontend URL
+    origin: process.env.CLIENT_URL || "http://localhost:5173", // same frontend URL
     methods: ["GET", "POST"],
     credentials: true,
   },
