@@ -1,5 +1,4 @@
 const Order = require('../models/orders');
-const { notifyOrderUpdate } = require("../server.js");
 
 const updateOrder= async (req, res) =>{
     try {
@@ -17,7 +16,8 @@ const updateOrder= async (req, res) =>{
       }
       await order.save();
     // notify users in socket room
-    // notifyOrderUpdate(order._id.toString(), order); // commented out due to circular dependency
+    const io = require('../utils/socket').getIO();
+    io.to(order._id.toString()).emit('orderUpdated', order);
     res.json(order);
     } catch (error) {
          res.status(500).json({ error: "Update failed" });

@@ -22,6 +22,7 @@ const  { createOrder }  = require('../controller/orderController.js');
 const  refreshToken  = require('./auth.js')
 const getOrder = require('../controller/getOrder.js')
 const getOrderById = require('../controller/getOrderById.js')
+const getOrderByPaymentId = require('../controller/getOrderByPaymentId.js')
 const getAllOrders = require('../controller/getAllOrders.js')
 const updateOrderStatus = require('../controller/updateOrderStatus.js')
 const updateOrder = require('../controller/updateOrder.js')
@@ -63,6 +64,7 @@ router.get('/profile', verifyToken , getProfile)
 router.get('/refresh-token', verifyRefreshToken ,refreshToken)
 router.get('/orders/:email', getOrder)
 router.get('/order/:id', getOrderById)
+router.get('/order/payment/:paymentId', getOrderByPaymentId)
 router.get('/allOrders', verifyToken, verifyAdmin , getAllOrders)
 
 
