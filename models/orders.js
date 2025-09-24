@@ -15,6 +15,15 @@ const orderSchema = new mongoose.Schema({
         itemPrice: Number,
     },
    ],
+   address:[
+    {
+        addrName: String,
+        addrPhone: String,
+        addrStreet: String,
+        addrCity: String,
+        addrPostalCode: String,
+    },
+   ],
    paymentId: String,
    proofImage: String,
    status:{

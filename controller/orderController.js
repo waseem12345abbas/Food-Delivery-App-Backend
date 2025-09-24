@@ -3,7 +3,7 @@ const Order = require("../models/orders");
 const createOrder = async (req, res) => {
   try {
     // create new order
-    const { paymentId, formData, cartItems } = req.body;
+    const { paymentId, userData, cartItems, address } = req.body;
 
     // Check if required fields are present
     if (!paymentId || !cartItems) {
@@ -15,17 +15,29 @@ const createOrder = async (req, res) => {
 
     let parsedCartItems;
     let parsedFormData = {};
+    let parsedAddress = null;
 
     try {
       parsedCartItems = JSON.parse(cartItems);
-      if (formData) {
-        parsedFormData = JSON.parse(formData);
+      if (userData) {
+        parsedFormData = JSON.parse(userData);
+      }
+      if(address){
+        parsedAddress = JSON.parse(address);
       }
     } catch (parseError) {
       console.error("Error parsing JSON data:", parseError);
       return res.status(400).json({
         success: false,
         message: "Invalid JSON data in cartItems or formData"
+      });
+    }
+
+    // Validate that parsedCartItems is an array
+    if (!Array.isArray(parsedCartItems)) {
+      return res.status(400).json({
+        success: false,
+        message: "cartItems must be a valid array"
       });
     }
 
@@ -39,6 +51,13 @@ const createOrder = async (req, res) => {
         itemName: item.name,
         itemQuantity: item.quantity,
         itemPrice: item.price,
+      })),
+      address: parsedAddress?.map((addr)=>({
+        addrName: addr.name,
+        addrPhone: addr.phone,
+        addrStreet: addr.street,
+        addrCity: addr.city,
+        addrPostalCode: addr.postalCode,
       })),
       paymentId,
       proofImage: req.file ? req.file.filename : null
