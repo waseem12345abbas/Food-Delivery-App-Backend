@@ -1,9 +1,16 @@
 const orderSchema = require('../models/orders')
 const getOrder = async (req, res)=>{
     try {
+        const email = req.params.email || req.params.userEmail;
+        console.log("EEEEEEEEEEEEEEeeeeee = ", email)
+        if(!email){
+            return res.status(400).json({success:false, message:"Email is required"})
+        }
+        console.log("Fetching orders for email:", email);
         const { email:userEmail } = req.params;
         let query = { userEmail: userEmail };
         const orderData = await orderSchema.find(query);
+        console.log("OOOOOOOOOOOOOOOOOOOOOOOo = ", orderData)
         if(orderData && orderData.length>0){
             return res.status(200).json({success:true, data:orderData})
         }

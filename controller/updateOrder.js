@@ -14,6 +14,10 @@ const updateOrder= async (req, res) =>{
       if (req.body.timer) {
         order.timer = req.body.timer;
       }
+      // if rider details are given then update the order
+      if(req.body.riderDetails){
+        order.riderDetails=req.body.riderDetails
+      }
       await order.save();
     // notify users in socket room
     const io = require('../utils/socket').getIO();

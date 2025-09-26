@@ -43,6 +43,11 @@ const orderSchema = new mongoose.Schema({
     startTime: Date,
     endTime: Date
    },
+   riderDetails: {
+    riderName: String,
+    riderNumber:String,
+    riderLocation:String,
+   },
    createdAt: {
     type: Date,
     default: Date.now,
