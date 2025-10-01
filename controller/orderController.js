@@ -3,13 +3,21 @@ const Order = require("../models/orders");
 const createOrder = async (req, res) => {
   try {
     // create new order
-    const { paymentId, userData, cartItems, address } = req.body;
+    const { paymentId, userData, cartItems, address, payAtCounter } = req.body;
 
     // Check if required fields are present
-    if (!paymentId || !cartItems) {
+    if (!cartItems) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: paymentId or cartItems"
+        message: "Missing required fields: cartItems"
+      });
+    }
+
+    // For online payment, require paymentId
+    if (!payAtCounter && !paymentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing paymentId for online payment"
       });
     }
 
@@ -52,13 +60,12 @@ const createOrder = async (req, res) => {
         itemQuantity: item.quantity,
         itemPrice: item.price,
       })),
-      address: parsedAddress?.map((addr)=>({
-        addrName: addr.name,
-        addrPhone: addr.phone,
-        addrStreet: addr.street,
-        addrCity: addr.city,
-        addrPostalCode: addr.postalCode,
-      })),
+      address: parsedAddress ? [{
+        addrName: parsedAddress.name,
+        addrPhone: parsedAddress.phone,
+        addrStreet: parsedAddress.street,
+        addrCity: parsedAddress.city,
+      }] : [],
       paymentId,
       proofImage: req.file ? req.file.filename : null
     });

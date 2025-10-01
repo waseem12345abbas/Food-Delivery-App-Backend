@@ -43,6 +43,8 @@ const orderSchema = new mongoose.Schema({
     startTime: Date,
     endTime: Date
    },
+    clientRatingFood:String,
+    clientRatingDelivery:String,
    riderDetails: {
     riderName: String,
     riderNumber:String,

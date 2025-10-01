@@ -1,6 +1,5 @@
 const express=require('express')
 const multer = require('multer')
-const authRoutes = require('./auth.js')
 const router=express.Router()
 // now require the controllers where we are making api calls with database
 const createUserRegister=require('../controller/userRequest.js')
@@ -26,6 +25,7 @@ const getOrderByPaymentId = require('../controller/getOrderByPaymentId.js')
 const getAllOrders = require('../controller/getAllOrders.js')
 const updateOrderStatus = require('../controller/updateOrderStatus.js')
 const updateOrder = require('../controller/updateOrder.js')
+const clientRating = require('../controller/updateRating.js')
 
 
 // clear refresh cookie (logout)
@@ -75,9 +75,9 @@ router.delete('/deleteProduct/:id', deleteWithId)
 router.put('/updateProduct/:id', updateMenuItem)
 router.put('/updateOrderStatus/:id', verifyToken, verifyAdmin, updateOrderStatus)
 router.put('/orders/:id', verifyToken, verifyAdmin, updateOrder)
+router.put('/orders/rating/:id', clientRating)
 
 // payment routes
 router.use('/payment', paymentRouter);
 router.use('/webhook', webhookRouter);
-router.use('/', authRoutes) // Change this line to remove the /api prefix
 module.exports=router
