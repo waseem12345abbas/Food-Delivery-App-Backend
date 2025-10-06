@@ -16,7 +16,7 @@ const createUserRegister=async(req, res)=>{
             })
         }
         // now store the data after validation with the original schema
-        const newUserRegister=new userRegister({ name, mobile,  email, address,  country, password, role: 'user'})
+        const newUserRegister=new userRegister({ name, mobile,  email, address,  country, password, rank: "Newbie" ,role: 'user'})
              await newUserRegister.save()
              
              // Generate tokens

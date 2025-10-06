@@ -29,6 +29,7 @@ const createOrder = async (req, res) => {
       parsedCartItems = JSON.parse(cartItems);
       if (userData) {
         parsedFormData = JSON.parse(userData);
+        console.log("PPPPPPPPPPPPPPPPPPPPPPPPParse form data = ", userData)
       }
       if(address){
         parsedAddress = JSON.parse(address);
@@ -50,7 +51,7 @@ const createOrder = async (req, res) => {
     }
 
     const newOrder = new Order({
-      userID: parsedFormData._id || null,
+      userID: parsedFormData.id || null,
       userName: parsedFormData.name || null,
       userEmail: parsedFormData.email || null,
       userCNIC: parsedFormData.cnic || null,
@@ -67,8 +68,13 @@ const createOrder = async (req, res) => {
         addrCity: parsedAddress.city,
       }] : [],
       paymentId,
-      proofImage: req.file ? req.file.filename : null
-    });
+      proofImage: req.file ? req.file.filename : null,
+      orderAmount:parsedCartItems.reduce((acc, item)=>{
+        const price = Number(item.price) || 0;
+        const quantity = Number(item.quantity) || 1;
+        return acc + (price* quantity)
+    }, 0)
+  })
 
     const savedOrder = await newOrder.save();
     return res.status(201).json({ success: true, message:"Ordered Saved SUccessfully", data: savedOrder });

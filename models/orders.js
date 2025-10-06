@@ -26,6 +26,7 @@ const orderSchema = new mongoose.Schema({
    ],
    paymentId: String,
    proofImage: String,
+   orderAmount: Number,
    status:{
     type: String,
     enum:["Pending", "Confirmed", "Rejected"],

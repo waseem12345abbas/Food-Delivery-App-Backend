@@ -16,7 +16,7 @@ const {verifyToken, verifyAdmin} = require('../middleware/authMiddleware.js')
 const getProfile = require('../controller/getProfile.js')
 const { verifyRefreshToken } = require('../middleware/authMiddleware.js')
 // import the controllers
-const { getBestSellingProducts } = require('../controller/analyticsController.js');
+const { getBestSellingProducts, getTodayRevenue } = require('../controller/analyticsController.js');
 const  { createOrder }  = require('../controller/orderController.js');
 const  refreshToken  = require('./auth.js')
 const getOrder = require('../controller/getOrder.js')
@@ -26,6 +26,7 @@ const getAllOrders = require('../controller/getAllOrders.js')
 const updateOrderStatus = require('../controller/updateOrderStatus.js')
 const updateOrder = require('../controller/updateOrder.js')
 const clientRating = require('../controller/updateRating.js')
+const adminController = require('../controller/adminController.js')
 
 
 // clear refresh cookie (logout)
@@ -54,6 +55,12 @@ router.post('/addItem', addMenuItem)
 router.post('/login', validateLogin)
 router.post('/userOrder', upload.single('proofImage') , createOrder)
 router.post('/logout', clearRefreshToken);
+
+// Admin route to update user ranks
+router.post('/admin/updateUserRanks', verifyToken, verifyAdmin, adminController.updateUserRanks);
+
+// Admin route to get today's revenue
+router.get('/revenue/today', verifyToken, verifyAdmin, adminController.getTodaysRevenue);
 
 // products get requests
 router.get('/allProducts', getProducts)

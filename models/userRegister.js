@@ -9,6 +9,8 @@ const userRegister = new mongoose.Schema({
   country: { type: String, required: true },
   password: { type: String, required: true },
   role: {type:String, enum:['user', 'admin'], default:'user'},
+  rank: { type: String, enum: ['NewBie', 'Silver', 'Gold', 'Platinum', 'Diamond'], default: 'NewBie' },
+  discount: { type: Number, default: 0 }, // discount percentage
 },
 {timestamps:true}
 );

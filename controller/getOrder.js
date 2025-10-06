@@ -9,7 +9,7 @@ const getOrder = async (req, res)=>{
         console.log("Fetching orders for email:", email);
         const { email:userEmail } = req.params;
         let query = { userEmail: userEmail };
-        const orderData = await orderSchema.find(query);
+        const orderData = await orderSchema.find(query).sort({ createdAt: -1 }).limit(1);
         console.log("OOOOOOOOOOOOOOOOOOOOOOOo = ", orderData)
         if(orderData && orderData.length>0){
             return res.status(200).json({success:true, data:orderData})
