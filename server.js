@@ -38,6 +38,9 @@ app.use(
   })
 );
 
+// serve static files from uploads folder
+app.use('/uploads', express.static('uploads'));
+
 // mount the request
 app.use("/api", apiRoutes);
 
