@@ -24,6 +24,7 @@ const orderSchema = new mongoose.Schema({
         addrPostalCode: String,
     },
    ],
+   comment: String,
    paymentId: String,
    proofImage: String,
    orderAmount: Number,

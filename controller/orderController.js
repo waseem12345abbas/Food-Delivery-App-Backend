@@ -3,7 +3,7 @@ const Order = require("../models/orders");
 const createOrder = async (req, res) => {
   try {
     // create new order
-    const { paymentId, userData, cartItems, address, payAtCounter } = req.body;
+    const { paymentId, userData, cartItems, address, payAtCounter, comment } = req.body;
 
     // Check if required fields are present
     if (!cartItems) {
@@ -29,7 +29,7 @@ const createOrder = async (req, res) => {
       parsedCartItems = JSON.parse(cartItems);
       if (userData) {
         parsedFormData = JSON.parse(userData);
-        console.log("PPPPPPPPPPPPPPPPPPPPPPPPParse form data = ", userData)
+        console.log("UUUUUUUUUUUUUUUUUUUU = ", parsedFormData)
       }
       if(address){
         parsedAddress = JSON.parse(address);
@@ -67,6 +67,7 @@ const createOrder = async (req, res) => {
         addrStreet: parsedAddress.street,
         addrCity: parsedAddress.city,
       }] : [],
+      comment: comment || "",
       paymentId,
       proofImage: req.file ? req.file.filename : null,
       orderAmount:parsedCartItems.reduce((acc, item)=>{

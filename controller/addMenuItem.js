@@ -5,11 +5,11 @@ const addMenuItem= async(req, res)=>{
         const {
             name,description, price, discountPrice, category, subCategory, 
             calories, isVegetarian, isAvailable,   isFeatured, isTodaysDeal,
-            dealExpiresAt, rating, createdAt, updatedAt , image}=req.body
+            dealExpiresAt, createdAt, updatedAt , image}=req.body
 
             const addItem= new foodProducts({ name,description, price, discountPrice, category, subCategory, 
             calories, isVegetarian, isAvailable,   isFeatured, isTodaysDeal,
-            dealExpiresAt, rating, createdAt, updatedAt , image})
+            dealExpiresAt, createdAt, updatedAt , image})
             try {
                 await addItem.save()
                 res.status(200).json({success:true, message:'Item added successfully.'})

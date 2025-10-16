@@ -17,8 +17,7 @@ const productSchema=new mongoose.Schema({
     isFeatured: Boolean,
     isTodaysDeal: Boolean,
     dealExpiresAt:Date,
-    
-    rating: { average: Number, count: Number },
+
     createdAt: Date,
     updatedAt: Date
 })
