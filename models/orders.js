@@ -35,7 +35,9 @@ const orderSchema = new mongoose.Schema({
    },
    stages: [
     {
+      id: Number,
       name: String,
+      duration: Number, // in minutes
       completed: { type: Boolean, default: false },
       image: String,
       updatedAt: { type: Date, default: Date.now }

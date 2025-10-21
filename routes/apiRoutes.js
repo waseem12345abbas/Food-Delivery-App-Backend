@@ -75,7 +75,7 @@ router.get('/order/payment/:paymentId', getOrderByPaymentId)
 router.get('/allOrders', verifyToken, verifyAdmin , getAllOrders)
 
 
-// delete requests
+// delete requests  
 router.delete('/deleteProduct/:id', deleteWithId)
 
 // update request

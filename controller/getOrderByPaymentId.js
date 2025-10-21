@@ -4,9 +4,9 @@ const getOrderByPaymentId = async (req, res) => {
     try {
         const order = await Order.findOne({ paymentId: req.params.paymentId });
         if (order) {
-            return res.status(200).json(order);
+            return res.status(200).json({ success: true, data: order });
         } else {
-            return res.status(404).json({ message: 'Order not found' });
+            return res.status(404).json({ success: false, message: 'Order not found' });
         }
     } catch (error) {
         console.error('Database error:', error);

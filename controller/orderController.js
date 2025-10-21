@@ -1,4 +1,5 @@
 const Order = require("../models/orders");
+const { defaultStages } = require("../utils/stages");
 
 const createOrder = async (req, res) => {
   try {
@@ -50,6 +51,21 @@ const createOrder = async (req, res) => {
       });
     }
 
+    // Calculate total time based on stages
+    const totalDuration = defaultStages.reduce((acc, stage) => acc + stage.recommendedPercent, 0);
+    const startTime = new Date();
+    const endTime = new Date(startTime.getTime() + totalDuration * 60 * 1000); // totalDuration in minutes
+
+    // Create stages with durations
+    const stages = defaultStages.map(stage => ({
+      id: stage.id,
+      name: stage.name,
+      duration: stage.recommendedPercent, // in minutes
+      completed: false,
+      image: stage.icon,
+      updatedAt: startTime
+    }));
+
     const newOrder = new Order({
       userID: parsedFormData.id || null,
       userName: parsedFormData.name || null,
@@ -74,7 +90,12 @@ const createOrder = async (req, res) => {
         const price = Number(item.price) || 0;
         const quantity = Number(item.quantity) || 1;
         return acc + (price* quantity)
-    }, 0)
+    }, 0),
+      stages: stages,
+      timer: {
+        startTime: startTime,
+        endTime: endTime
+      }
   })
 
     const savedOrder = await newOrder.save();
