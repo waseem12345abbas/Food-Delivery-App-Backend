@@ -23,6 +23,7 @@ const getOrder = require('../controller/getOrder.js')
 const getOrderById = require('../controller/getOrderById.js')
 const getOrderByPaymentId = require('../controller/getOrderByPaymentId.js')
 const getAllOrders = require('../controller/getAllOrders.js')
+const searchOrders = require('../controller/searchOrders.js')
 const updateOrderStatus = require('../controller/updateOrderStatus.js')
 const updateOrder = require('../controller/updateOrder.js')
 const clientRating = require('../controller/updateRating.js')
@@ -73,6 +74,7 @@ router.get('/orders/:email', getOrder)
 router.get('/order/:id', getOrderById)
 router.get('/order/payment/:paymentId', getOrderByPaymentId)
 router.get('/allOrders', verifyToken, verifyAdmin , getAllOrders)
+router.get('/searchOrders', verifyToken, verifyAdmin , searchOrders)
 
 
 // delete requests  

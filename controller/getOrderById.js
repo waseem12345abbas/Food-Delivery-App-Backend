@@ -2,17 +2,10 @@ const Order = require('../models/orders');
 
 const getOrderById = async (req, res) => {
     try {
-        const id = req.params.id;
+        const orderNumber = req.params.id;
 
-        // Check if this is a guest user ID (starts with "guest_")
-        let order;
-        if (id.startsWith('guest_')) {
-            // For guest users, search by userID field
-            order = await Order.findOne({ userID: id });
-        } else {
-            // For regular users, search by _id (ObjectId)
-            order = await Order.findById(id);
-        }
+        // Search by orderNumber field
+        const order = await Order.findOne({ orderNumber: orderNumber });
 
         if (order) {
             return res.status(200).json({ success: true, data: order });

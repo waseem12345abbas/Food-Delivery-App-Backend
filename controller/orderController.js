@@ -4,7 +4,7 @@ const { defaultStages } = require("../utils/stages");
 const createOrder = async (req, res) => {
   try {
     // create new order
-    const { paymentId, userData, cartItems, address, payAtCounter, comment } = req.body;
+    const { paymentId, userData, cartItems, address, payAtCounter, comment, orderNumber, serviceType, discountDetails } = req.body;
 
     // Check if required fields are present
     if (!cartItems) {
@@ -25,15 +25,18 @@ const createOrder = async (req, res) => {
     let parsedCartItems;
     let parsedFormData = {};
     let parsedAddress = null;
+    let parsedDiscountDetails = null;
 
     try {
       parsedCartItems = JSON.parse(cartItems);
       if (userData) {
         parsedFormData = JSON.parse(userData);
-        console.log("UUUUUUUUUUUUUUUUUUUU = ", parsedFormData)
       }
       if(address){
         parsedAddress = JSON.parse(address);
+      }
+      if(discountDetails){
+        parsedDiscountDetails = JSON.parse(discountDetails);
       }
     } catch (parseError) {
       console.error("Error parsing JSON data:", parseError);
@@ -68,6 +71,8 @@ const createOrder = async (req, res) => {
 
     const newOrder = new Order({
       userID: parsedFormData.id || null,
+      orderNumber: orderNumber,
+      serviceType: serviceType || "dine-in",
       userName: parsedFormData.name || null,
       userEmail: parsedFormData.email || null,
       userCNIC: parsedFormData.cnic || null,
@@ -86,11 +91,12 @@ const createOrder = async (req, res) => {
       comment: comment || "",
       paymentId,
       proofImage: req.file ? req.file.filename : null,
-      orderAmount:parsedCartItems.reduce((acc, item)=>{
+      orderAmount: parsedDiscountDetails ? parsedDiscountDetails.totalPrice : parsedCartItems.reduce((acc, item)=>{
         const price = Number(item.price) || 0;
         const quantity = Number(item.quantity) || 1;
         return acc + (price* quantity)
     }, 0),
+      discountDetails: parsedDiscountDetails,
       stages: stages,
       timer: {
         startTime: startTime,
@@ -99,6 +105,12 @@ const createOrder = async (req, res) => {
   })
 
     const savedOrder = await newOrder.save();
+
+    // Emit new order event to admin clients
+    const { getIO } = require('../utils/socket');
+    const io = getIO();
+    io.emit('newOrder', savedOrder);
+
     return res.status(201).json({ success: true, message:"Ordered Saved SUccessfully", data: savedOrder });
   } catch (error) {
     console.error("Error creating order:", error);

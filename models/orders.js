@@ -4,6 +4,8 @@ const mongoose= require("mongoose");
 //   { id:order._id, name:order.name, quantity:order.quantity, price:order.price}
 const orderSchema = new mongoose.Schema({
    userID: String,
+   orderNumber: String,
+   serviceType: String,
    userName: String,
    userEmail: String,
    userCNIC: String,
@@ -28,6 +30,13 @@ const orderSchema = new mongoose.Schema({
    paymentId: String,
    proofImage: String,
    orderAmount: Number,
+   discountDetails: {
+    userRank: String,
+    discountPercentage: Number,
+    discountAmount: Number,
+    discountedSubtotal: Number,
+    totalPrice: Number,
+   },
    status:{
     type: String,
     enum:["Pending", "Confirmed", "Rejected"],
