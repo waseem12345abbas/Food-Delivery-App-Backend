@@ -69,6 +69,17 @@ const createOrder = async (req, res) => {
       updatedAt: startTime
     }));
 
+    // Filter out invalid cart items (null or missing id)
+    const validCartItems = parsedCartItems.filter(item => item && item.id);
+
+    // Check if there are any valid cart items
+    if (validCartItems.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No valid cart items provided"
+      });
+    }
+
     const newOrder = new Order({
       userID: parsedFormData.id || null,
       orderNumber: orderNumber,
@@ -76,7 +87,7 @@ const createOrder = async (req, res) => {
       userName: parsedFormData.name || null,
       userEmail: parsedFormData.email || null,
       userCNIC: parsedFormData.cnic || null,
-      cartItems: parsedCartItems.map((item)=>({
+      cartItems: validCartItems.map((item)=>({
         itemID: item.id,
         itemName: item.name,
         itemQuantity: item.quantity,
@@ -91,7 +102,7 @@ const createOrder = async (req, res) => {
       comment: comment || "",
       paymentId,
       proofImage: req.file ? req.file.filename : null,
-      orderAmount: parsedDiscountDetails ? parsedDiscountDetails.totalPrice : parsedCartItems.reduce((acc, item)=>{
+      orderAmount: parsedDiscountDetails ? parsedDiscountDetails.totalPrice : validCartItems.reduce((acc, item)=>{
         const price = Number(item.price) || 0;
         const quantity = Number(item.quantity) || 1;
         return acc + (price* quantity)
