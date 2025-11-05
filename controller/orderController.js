@@ -1,24 +1,15 @@
 const Order = require("../models/orders");
-const { defaultStages } = require("../utils/stages");
 
 const createOrder = async (req, res) => {
   try {
     // create new order
-    const { paymentId, userData, cartItems, address, payAtCounter, comment, orderNumber, serviceType, discountDetails } = req.body;
+    const { paymentId, userData, cartItems, address, payAtCounter, orderNumber, discountDetails } = req.body;
 
     // Check if required fields are present
     if (!cartItems) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields: cartItems"
-      });
-    }
-
-    // For online payment, require paymentId
-    if (!payAtCounter && !paymentId) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing paymentId for online payment"
       });
     }
 
@@ -54,21 +45,6 @@ const createOrder = async (req, res) => {
       });
     }
 
-    // Calculate total time based on stages
-    const totalDuration = defaultStages.reduce((acc, stage) => acc + stage.recommendedPercent, 0);
-    const startTime = new Date();
-    const endTime = new Date(startTime.getTime() + totalDuration * 60 * 1000); // totalDuration in minutes
-
-    // Create stages with durations
-    const stages = defaultStages.map(stage => ({
-      id: stage.id,
-      name: stage.name,
-      duration: stage.recommendedPercent, // in minutes
-      completed: false,
-      image: stage.icon,
-      updatedAt: startTime
-    }));
-
     // Filter out invalid cart items (null or missing id)
     const validCartItems = parsedCartItems.filter(item => item && item.id);
 
@@ -83,7 +59,6 @@ const createOrder = async (req, res) => {
     const newOrder = new Order({
       userID: parsedFormData.id || null,
       orderNumber: orderNumber,
-      serviceType: serviceType || "dine-in",
       userName: parsedFormData.name || null,
       userEmail: parsedFormData.email || null,
       userCNIC: parsedFormData.cnic || null,
@@ -96,31 +71,29 @@ const createOrder = async (req, res) => {
       address: parsedAddress ? [{
         addrName: parsedAddress.name,
         addrPhone: parsedAddress.phone,
+        addrEmail: parsedAddress.email,
         addrStreet: parsedAddress.street,
         addrCity: parsedAddress.city,
+        addrState: parsedAddress.state,
+        addrPostalCode: parsedAddress.postalCode,
+        addrCountry: parsedAddress.country,
+        addrDeliveryInstructions: parsedAddress.deliveryInstructions,
       }] : [],
-      comment: comment || "",
       paymentId,
-      proofImage: req.file ? req.file.filename : null,
+      proofImage: req.file ? {
+        path: req.file.path,
+        filename: req.file.filename,
+        originalname: req.file.originalname
+      } : null,
       orderAmount: parsedDiscountDetails ? parsedDiscountDetails.totalPrice : validCartItems.reduce((acc, item)=>{
         const price = Number(item.price) || 0;
         const quantity = Number(item.quantity) || 1;
         return acc + (price* quantity)
     }, 0),
       discountDetails: parsedDiscountDetails,
-      stages: stages,
-      timer: {
-        startTime: startTime,
-        endTime: endTime
-      }
   })
 
     const savedOrder = await newOrder.save();
-
-    // Emit new order event to admin clients
-    const { getIO } = require('../utils/socket');
-    const io = getIO();
-    io.emit('newOrder', savedOrder);
 
     return res.status(201).json({ success: true, message:"Ordered Saved SUccessfully", data: savedOrder });
   } catch (error) {

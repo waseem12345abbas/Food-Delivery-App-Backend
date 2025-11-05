@@ -9,10 +9,12 @@ const updateOrder= async (req, res) =>{
       // Replace stages with provided stages
       if (req.body.stages !== undefined) {
         order.stages = req.body.stages;
+        order.trackStatus = true; // Set trackStatus to true when stages are added
       }
       // Update timer if provided
       if (req.body.timer) {
         order.timer = req.body.timer;
+        order.trackStatus = true; // Set trackStatus to true when timer is added
       }
       // if rider details are given then update the order
       if(req.body.riderDetails){

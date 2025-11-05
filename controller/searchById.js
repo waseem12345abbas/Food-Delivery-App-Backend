@@ -1,10 +1,10 @@
-const Products=require('../models/products')
+const laptopProducts = require('../models/products');
 
 // find the related products
 const searchById=('/products', async(req, res)=>{
     const id= req.params.id;
     try {
-        const idProduct= await Products.findById(id).lean()
+        const idProduct = await laptopProducts.findById(id).lean();
         if(idProduct){
             return res.status(200).json(idProduct) 
         }else{

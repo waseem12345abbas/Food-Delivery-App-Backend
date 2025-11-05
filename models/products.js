@@ -1,26 +1,47 @@
-const mongoose=require('mongoose')
-// here it is creating schema for products 
-const productSchema=new mongoose.Schema({
-    name:String,
-    description:String,
-    category:String,
-    subCategory:String,
+const mongoose = require('mongoose');
 
-    price:Number,
-    discountPrice:Number,
-    calories:Number,
-    image:String,
+// Schema for laptop products
+const productSchema = new mongoose.Schema({
+    name: String,
+    brand: String,
+    category: String,
+    generation: String,
+    processorType: String,
+    processorSpeed: String,
+    installedRAM: String,
+    memoryType: String,
+    hardDriveSize: String,
+    hardDriveType: String,
+    ssd: String,
+    graphicSeries: String,
+    dedicatedGraphics: String,
+    graphicsMemory: String,
+    graphicsProcessor: String,
+    screenSize: String,
+    screenResolution: String,
+    screenType: String,
+    color: String,
+    operatingSystem: String,
+    weight: String,
+    keyboard: String,
+    bluetooth: String,
+    lan: String,
+    wifi: String,
+    usbPorts: String,
+    hdmi: String,
+    camera: String,
+    warranty: String,
+    price: Number,
+    images: [String],
+    condition: String,
+    productPage: String,
+    description: String,
+    isSpecialDeal: Boolean,
+    quantity: Number,
 
-    isVegetarian: Boolean,
-    isAvailable: Boolean,
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
 
-    isFeatured: Boolean,
-    isTodaysDeal: Boolean,
-    dealExpiresAt:Date,
-
-    createdAt: Date,
-    updatedAt: Date
-})
-
-// export the schema to use this to create products 
-module.exports=mongoose.model('foodProducts', productSchema)
+// Export the schema to use this to create laptop products
+module.exports = mongoose.model('laptopProducts', productSchema);

@@ -14,7 +14,6 @@ const apiRoutes = require("./routes/apiRoutes");
 // create the app
 const app = express();
 const server = http.createServer(app);
-const io = require('./utils/socket').init(server);
 
 // middlewares
 app.use(bodyParser.json());

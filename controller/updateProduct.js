@@ -1,6 +1,6 @@
-const foodProducts = require('../models/products')
+const laptopProducts = require('../models/products');
 
-const updateMenuItem = async (req, res) => {
+const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
@@ -8,7 +8,7 @@ const updateMenuItem = async (req, res) => {
         // Update the updatedAt field
         updateData.updatedAt = new Date();
 
-        const updatedItem = await foodProducts.findByIdAndUpdate(id, updateData, { new: true });
+        const updatedItem = await laptopProducts.findByIdAndUpdate(id, updateData, { new: true });
 
         if (!updatedItem) {
             return res.status(404).json({
@@ -19,7 +19,7 @@ const updateMenuItem = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Item updated successfully.',
+            message: 'Product updated successfully.',
             data: updatedItem
         });
     } catch (error) {
@@ -28,6 +28,6 @@ const updateMenuItem = async (req, res) => {
             message: error.message || 'Internal Server Error'
         });
     }
-}
+};
 
-module.exports = updateMenuItem
+module.exports = updateProduct;

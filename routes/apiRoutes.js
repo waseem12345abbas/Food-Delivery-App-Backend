@@ -8,15 +8,12 @@ const getProducts=require('../controller/getProducts.js')
 const searchById=require('../controller/searchById.js')
 const getUsers=require('../controller/getUsers.js')
 const { deleteWithId } = require('../controller/deleteWithId.js');
-const addMenuItem = require('../controller/addMenuItem.js')
-const updateMenuItem = require('../controller/updateMenuItem.js')
-const paymentRouter = require('./payment.js');
-const webhookRouter = require('./webhook.js');
+const addProduct = require('../controller/addProduct.js');
+const updateProduct = require('../controller/updateProduct.js');
 const {verifyToken, verifyAdmin} = require('../middleware/authMiddleware.js')
 const getProfile = require('../controller/getProfile.js')
 const { verifyRefreshToken } = require('../middleware/authMiddleware.js')
 // import the controllers
-const { getBestSellingProducts, getTodayRevenue } = require('../controller/analyticsController.js');
 const  { createOrder }  = require('../controller/orderController.js');
 const  refreshToken  = require('./auth.js')
 const getOrder = require('../controller/getOrder.js')
@@ -40,21 +37,67 @@ const clearRefreshToken = (req, res)=>{
   res.json({ success: true });
 }
 
+// Configure multer for file upload
 const storage = multer.diskStorage({
-    destination: function (req, file , cb){
-        cb(null, 'uploads/')
+    destination: function (req, file, cb) {
+        const fs = require('fs');
+        const uploadDir = 'uploads/';
+        
+        // Create uploads directory if it doesn't exist
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        
+        cb(null, uploadDir);
     },
-    filename: function (req, file, cb){
-        cb(null, Date.now() + '-' + file.originalname)
-    },
-})
+    filename: function (req, file, cb) {
+        // Generate unique filename with original extension
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = file.originalname.split('.').pop();
+        cb(null, `${uniqueSuffix}.${ext}`);
+    }
+});
 
-const upload=multer({storage})
+const fileFilter = (req, file, cb) => {
+    // Accept only image files
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files are allowed!'), false);
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+}).single('proofImage');
 // user post requests
 router.post('/adduser', createUserRegister)
-router.post('/addItem', addMenuItem)
+router.post('/addItem', addProduct)
 router.post('/login', validateLogin)
-router.post('/userOrder', upload.single('proofImage') , createOrder)
+router.post('/userOrder', (req, res, next) => {
+    upload(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            // A Multer error occurred during upload
+            return res.status(400).json({
+                success: false,
+                message: err.code === 'LIMIT_FILE_SIZE' 
+                    ? 'File size too large. Maximum size is 5MB.' 
+                    : err.message
+            });
+        } else if (err) {
+            // An unknown error occurred
+            return res.status(400).json({
+                success: false,
+                message: err.message
+            });
+        }
+        next();
+    });
+}, createOrder);
 router.post('/logout', clearRefreshToken);
 
 // Admin route to update user ranks
@@ -66,7 +109,6 @@ router.get('/revenue/today', verifyToken, verifyAdmin, adminController.getTodays
 // products get requests
 router.get('/allProducts', getProducts)
 router.get('/products/:id', searchById)
-router.get('/bestSellingProducts', getBestSellingProducts)
 router.get('/users', getUsers)
 router.get('/profile', verifyToken , getProfile)
 router.get('/refresh-token', verifyRefreshToken ,refreshToken)
@@ -81,12 +123,9 @@ router.get('/searchOrders', verifyToken, verifyAdmin , searchOrders)
 router.delete('/deleteProduct/:id', deleteWithId)
 
 // update request
-router.put('/updateProduct/:id', updateMenuItem)
+router.put('/updateProduct/:id', updateProduct)
 router.put('/updateOrderStatus/:id', verifyToken, verifyAdmin, updateOrderStatus)
 router.put('/orders/:id', verifyToken, verifyAdmin, updateOrder)
 router.put('/orders/rating/:id', clientRating)
 
-// payment routes
-router.use('/payment', paymentRouter);
-router.use('/webhook', webhookRouter);
 module.exports=router
